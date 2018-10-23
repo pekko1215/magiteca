@@ -23,6 +23,7 @@ var control = {
         "MB下段リプレイ",
 		'MB1枚役',
 		'MBBIG',
+		"転落BB1"
 		],
-	maxpay:[15,15,9]
+	maxpay:[9,15,9]
 }

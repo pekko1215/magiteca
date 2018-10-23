@@ -109,4 +109,8 @@ var YakuData = [{
         name: "1枚役",
         pay: [1, 0, 0]
     },
+    {
+        name: "転落BB1",
+        pay: [0, 0, 0]
+    },
 ]

@@ -10,14 +10,14 @@ var lotdata = {
             value:1/9},
         {   name:"BIG",
             value:1/560},
-        {   name:'REG',
-            value:1/119},
         {   name:'同色REG',
             value:1/1849},
         {   name:'異色REG',
             value:1/140},
         {   name:'MB',
-            value:1/1.3}
+            value:1/1.3},
+        {   name:'転落BB1',
+            value:1/150}
     ],
     "big":[
         {

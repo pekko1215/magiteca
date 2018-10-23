@@ -109,7 +109,6 @@ function main() {
                             sounder.playSound('mb');
                             break
                         case '転落BB1':
-                        case '転落BB2':
                             sounder.stopSound("bgm");
                             setGamemode('BIG');
                             bonusdata = {
@@ -157,7 +156,7 @@ function main() {
                         case '同色REG':
                         case '異色REG':
                             sounder.stopSound("bgm");
-                            sounder.playSound('eight',true)
+                            sounder.playSound('reg1',true,()=>{},1.502)
                             setGamemode('JAC');
                             bonusdata = {
                                 mode: d.name,
@@ -180,7 +179,7 @@ function main() {
                         case '同色REG':
                         case '異色REG':
                             sounder.stopSound("bgm");
-                            sounder.playSound('eight',true)
+                            sounder.playSound('reg1',true,()=>{},1.502)
                             setGamemode('JAC');
                             bonusdata = {
                                 mode: d.name,
@@ -421,37 +420,23 @@ function main() {
                     case "ベル":
                         ret = "ベル";
                         break
-                    case "チェリー":
-                        ret = lot;
-                        break;
-                    case '1枚役':
-                        switch (rand(8)) {
-                            case 0:
-                            case 1:
-                            case 2:
-                            case 3:
-                                ret = '1枚役1';
-                                break
-                            case 4:
-                            case 5:
-                                ret = '1枚役2';
-                                break
-                            case 6:
-                            case 7:
-                                ret = '1枚役3';
-                                break
-                        }
-                        break
-                    case '転落BB':
                     case '異色REG':
                     case '同色REG':
                         if (!bonusflag) {
                             bonusflag = lot;
-                            ret = 'リプレイ';
+                            ret = [
+                                '1枚役1',
+                                '1枚役2',
+                            ][rand(2)]
                         } else {
                             ret = bonusflag;
                         }
                         break
+                    case '転落BB1':
+                        bonusflag = '転落BB1';
+                        ret = 'リプレイ'
+                        break
+                    break
                     case 'BIG':
                     case 'REG':
                         if (!bonusflag) {
@@ -640,7 +625,7 @@ function main() {
     sounder.addFile("sound/replay.wav", "replay").addTag("se");
     sounder.addFile("sound/BIG1.mp3", "BIG1").addTag("bgm")
     sounder.addFile("sound/rushbgm.mp3", "RUSHBGM").addTag("bgm")
-    sounder.addFile("sound/eight.mp3", "eight").addTag("bgm")
+    sounder.addFile("sound/reg1.mp3", "reg1").addTag("bgm")
     sounder.addFile("sound/title.wav", 'title').addTag("se");
     sounder.addFile("sound/type.mp3", 'type').addTag("se");
     sounder.addFile("sound/yokoku.wav", 'yokoku').addTag("se");
@@ -915,28 +900,11 @@ function main() {
             case 'normal':
                 if (kokutid) return
                 if (slotmodule.playControlData.betcoin === 2) return;
-                var plot = lot;
-                if (lot == 'REG' || bonusflag) { plot = 'BIG' }
-                var eforig = /BIG|REG|MB/.test(lot) ? 'BIG' : orig;
-                var effect = getEffect[eforig] && getEffect[eforig]();
-                if (!effect || rand(4)) {
-                    if(lot === 'MB'){
-                        setTimeout(()=>{
-                            if(!kokutid){
-                                sounder.playSound('kokuti');
-                                $('#ebiwrap').addClass('display');
-                                $('#ebi').addClass('display');
-                                setTimeout(() => {
-                                    $('#ebiwrap').removeClass('display');
-                                    $('#ebi').removeClass('display');
-                                }, 1000)
-                                kokutid = true;
-                            }
-                        },~~(Math.random()*3000))
-                    }
-                }
-                if(effect){
-					sounder.playSound('yokoku');
+                if (/(1枚役|転落BB1)/.test(lot)){
+                    slotmodule.once('allreelstop',()=>{
+                        if(gamemode != 'normal') return;
+                        sounder.stopSound('bgm');
+                    })
                 }
                 break
             case 'big':
@@ -1011,6 +979,12 @@ function main() {
 				})
                 break
             case 'reg':
+                if (/(1枚役)/.test(lot)){
+                    slotmodule.once('allreelstop',()=>{
+                        if(gamemode != 'normal') return;
+                        sounder.stopSound('bgm');
+                    })
+                }
                 break
         }
     }

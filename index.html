@@ -32,19 +32,18 @@
     }
     #underpanel {
         position: absolute;
-        top: 440px;
         left: 0;
     }
     #pixiview {
         left:calc(173px + 5px);
-        top: calc(68px + 433px);
+        top: calc(68px - 7px);
         position: absolute;
     }
 
     #creditSegment {
         position: absolute;
         left:calc(65px);
-        top:calc(353px + 433px);
+        top:calc(353px - 7px);
         width:131px;
         height: 74px;
     }
@@ -52,7 +51,7 @@
     #paySegment{
         position: absolute;
         left:calc(209px + 5px);
-        top: calc(353px + 433px);
+        top: calc(353px - 7px);
         width:131px;
         height: 74px;
     }
@@ -60,7 +59,7 @@
     #effectSegment{
         position: absolute;
         left:calc(725px + 5px);
-        top: calc(352px + 433px);
+        top: calc(352px - 7px);
         height: 74px;
         width: 188px;
     }
@@ -170,7 +169,6 @@
     }
 </style>
 <body>
-<img src="img/uppanel.png" id="panel">
 <img src="img/panel.png" id="underpanel">
 <div id="pixiview"></div>
 <script type="text/javascript" src="originjs/appmain.js"></script>
@@ -186,11 +184,6 @@
 <canvas id="paySegment" width="120px" height="74px"></canvas>
 <canvas id="effectSegment" width="188px" height="74px"></canvas>
 <div class="mark"></div>
-<div id="effect" class="">エビゾリ</div>
-<div id="rushinfo"></div>
-<div id="ebiwrap" class="">
-    <img src="./img/ebi1.png" id="ebi">
-</div>
 <div class="GameData">
 </div>
 </body>
