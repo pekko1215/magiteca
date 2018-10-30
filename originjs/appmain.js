@@ -14,7 +14,7 @@ function main() {
         game: 250
     }
     slotmodule.on("allreelstop", function(e) {
-        console.log(e,slotmodule.playControlData.maxbet)
+        console.log(e, slotmodule.playControlData.maxbet)
         if (e.hits != 0) {
             if (e.hityaku.length == 0)
                 return
@@ -23,9 +23,9 @@ function main() {
             slotmodule.once("bet", function() {
                 slotmodule.clearFlashReservation()
             })
-            if (e.hityaku[0].name.indexOf("代替リプレイ") != -1 ||
-                e.hityaku[0].name.indexOf("リーチ目リプレイ") != -1 ||
-                e.hityaku[0].name.indexOf("1枚役") != -1) {
+            if (e.hityaku[0].name.includes("1枚役")||
+                e.hityaku[0].name.includes('転落BB')
+                ) {
                 notplaypaysound = true;
             } else {
                 notplaypaysound = false;
@@ -85,7 +85,7 @@ function main() {
                             kokutid = false;
                             break
                         case 'MB':
-                            if(!kokutid){
+                            if (!kokutid) {
                                 // $('#ebiwrap').addClass('display');
                                 // $('#ebi').addClass('display');
                                 // setTimeout(() => {
@@ -112,7 +112,7 @@ function main() {
                             sounder.stopSound("bgm");
                             setGamemode('BIG');
                             bonusdata = {
-                                bonusget: 252,
+                                bonusget: 321,
                                 geted: 0
                             }
                             bonusflag = null;
@@ -137,30 +137,17 @@ function main() {
                         case "リプレイ":
                             replayflag = true;
                             break;
-                        case '1枚役':
-                            var t = 20;
-                            slotmodule.setFlash(null, 0, function(e) {
-                                if (!t--) {
-                                    return
-                                }
-                                matrix = matrix.map((arr) => {
-                                    arr[0] = rand(2);
-                                    arr[1] = rand(2);
-                                    arr[2] = rand(2);
-                                    return arr;
-                                })
-                                // slotmodule.setFlash(flashdata.default, 20)
-                                slotmodule.setFlash(replaceMatrix(flashdata.default, matrix, colordata.LINE_F, null), 2, arguments.callee)
-                            })
-                            break;
-                        case '同色REG':
                         case '異色REG':
+                            $('#logo').attr({src:'./img/logo_off.png'})
+                        case '同色REG':
                             sounder.stopSound("bgm");
-                            sounder.playSound('reg1',true,()=>{},1.502)
+                            sounder.playSound('reg1', true, () => {}, 1.502)
+                            $('#win').addClass('off');
+                            $('#win').removeClass('on');
                             setGamemode('JAC');
                             bonusdata = {
                                 mode: d.name,
-                                jacgamecount: 8,
+                                jacgamecount: 9,
                                 jacgetcount: 8
                             }
                             bonusflag = null;
@@ -179,11 +166,13 @@ function main() {
                         case '同色REG':
                         case '異色REG':
                             sounder.stopSound("bgm");
-                            sounder.playSound('reg1',true,()=>{},1.502)
+                            sounder.playSound('reg1', true, () => {}, 1.502)
+                            $('#win').addClass('off');
+                            $('#win').removeClass('on');
                             setGamemode('JAC');
                             bonusdata = {
                                 mode: d.name,
-                                jacgamecount: 8,
+                                jacgamecount: 9,
                                 jacgetcount: 8
                             }
                             bonusflag = null;
@@ -206,22 +195,6 @@ function main() {
                                 slotmodule.setFlash(replaceMatrix(flashdata.default, matrix, colordata.LINE_F, null), 20, arguments.callee)
                             })
                             break
-                        case '1枚役':
-                            var t = 20;
-                            slotmodule.setFlash(null, 0, function(e) {
-                                if (!t--) {
-                                    return
-                                }
-                                matrix = matrix.map((arr) => {
-                                    arr[0] = rand(2);
-                                    arr[1] = rand(2);
-                                    arr[2] = rand(2);
-                                    return arr;
-                                })
-                                // slotmodule.setFlash(flashdata.default, 20)
-                                slotmodule.setFlash(replaceMatrix(flashdata.default, matrix, colordata.LINE_F, null), 2, arguments.callee)
-                            })
-                            break;
                         case "リプレイ":
                             replayflag = true;
                             break;
@@ -231,8 +204,8 @@ function main() {
                 case 'jac':
                     if (d.name == 'リプレイ') {
                         replayflag = true;
-                    }else{
-						bonusdata.jacgetcount--;
+                    } else {
+                        bonusdata.jacgetcount--;
                     }
                     changeBonusSeg()
                     // bonusdata.jacgamecount--;
@@ -241,56 +214,11 @@ function main() {
         if (gamemode != 'normal' && bonusdata.geted + e.pay >= bonusdata.bonusget) {
             // sounder.stopSound("bgm")
             segments.effectseg.reset();
-            if(gamemode == 'big'){
-                slotmodule.freeze();
-                Typewriter('エビゾリラッシュ<br>確定！',{
-                    speed:150,
-                    delay:5000,
-                }).change((t)=>{
-                    t!="\n"&&sounder.playSound('type');
-                }).title(()=>{
-                    sounder.playSound('title');
-                }).finish((e)=>{
-                    e.parentNode.removeChild(e);
-                    setTimeout(()=>{
-                        slotmodule.resume();
-                    },1000)
-                });
-            }
-            if(gamemode == 'big'){
-				rushcoin = 0;
-				slotmodule.once('bet',()=>{
-					$('#panel').attr({src:`./img/ebirush.png`});
-					$('#effect').hide();
-					sounder.playSound('rushstart',false,()=>{
-						sounder.playSound('RUSHBGM',true)
-					})
-					setTimeout(()=>{
-						$('#panel').attr({src:`./img/uppanel.png`});
-						$('#effect').show();
-					},2000)
-				})
-            }
             setGamemode('normal');
         }
         if (gamemode == 'jac') {
             if (bonusdata.jacgamecount <= 0 || bonusdata.jacgetcount <= 0) {
-	            setGamemode('normal');
-	            sounder.stopSound('bgm')
-	            if(bonusdata.jacgetcount <= 0){
-					rushcoin = 0;
-					slotmodule.once('bet',()=>{
-						$('#panel').attr({src:`./img/ebirush.png`});
-						$('#effect').hide();
-						sounder.playSound('rushstart',false,()=>{
-							sounder.playSound('RUSHBGM',true)
-						})
-						setTimeout(()=>{
-							$('#panel').attr({src:`./img/uppanel.png`});
-							$('#effect').show();
-						},2000)
-					})
-				}
+                setGamemode('normal');
             }
         }
         if (nexter) {
@@ -308,7 +236,7 @@ function main() {
                     coin--;
                     e.coin--;
                     incoin++;
-                    rushcoin --;
+                    rushcoin--;
                     changeCredit(-1);
                     setTimeout(function() {
                         thisf(e)
@@ -331,7 +259,7 @@ function main() {
             })(e)
         }
         if (gamemode == "jac") {
-            segments.payseg.setSegments(bonusdata.jacgamecount)
+            segments.payseg.setSegments(bonusdata.jacgamecount - 1)
         } else {
             segments.payseg.reset();
         }
@@ -346,21 +274,8 @@ function main() {
         if (!("paycount" in e)) {
             e.paycount = 0
             e.se = "pay";
-            if (gamemode != "normal" && pays) {
-                e.se = "cherry"
-                if (pays == 15) {
-                    e.se = "bigpay"
-                }
-            }
-            if (pays <= 4 && pays) e.se = "cherry";
-            if (pays >= 14) e.se = "bigpay"
-            if (gamemode === 'reg' || (pays == 15 && gamemode == 'normal')) e.se = 'mbpay'
             if (!replayflag && !notplaypaysound) {
-                if(e.se == 'mbpay'){
-                    sounder.playSound(e.se,true,()=>{},0,0.1);
-                }else{
-                    sounder.playSound(e.se, e.se != "cherry");
-                }
+                sounder.playSound(e.se, true, () => {}, 0, 0.1);
             }
         }
         if (pays == 0) {
@@ -386,9 +301,9 @@ function main() {
             if (gamemode != "normal" && !bonusflag) {
                 bonusdata.geted++;
             }
-            if (e.se === 'mbpay'){
-				rushcoin ++;
-				showRushCoin();
+            if (e.se === 'mbpay') {
+                rushcoin++;
+                showRushCoin();
             }
             changeCredit(1);
             segments.payseg.setSegments(e.paycount)
@@ -436,16 +351,14 @@ function main() {
                         bonusflag = '転落BB1';
                         ret = 'リプレイ'
                         break
-                    break
+                        break
                     case 'BIG':
                     case 'REG':
                         if (!bonusflag) {
                             bonusflag = lot;
                             ret = [
-                                'リプレイ',
-                                'チェリー',
                                 lot
-                            ][rand(3)]
+                            ][rand(1)]
                         } else {
                             ret = bonusflag;
                         }
@@ -461,16 +374,8 @@ function main() {
                         ret = "はずれ"
                         switch (bonusflag) {
                             case null:
-                                switch (rt.mode) {
-                                    case 'リプレイ高確率':
-                                        ret = 'リプレイ'
-                                }
-                                break
                             default:
                                 ret = bonusflag;
-                                if (rand(3)) {
-                                    ret = 'リプレイ'
-                                }
                                 break
                         }
                 }
@@ -488,9 +393,6 @@ function main() {
                         break
                     case "ベル":
                         ret = "ベル";
-                        break
-                    case "チェリー":
-                        ret = lot;
                         break;
                     case '異色REG':
                     case '同色REG':
@@ -509,20 +411,17 @@ function main() {
                         ret = "はずれ"
                         switch (bonusflag) {
                             case null:
-								lot = null;
+                                lot = null;
                                 break
                             default:
                                 ret = bonusflag;
-                                if (!rand(3)) {
-                                    ret = 'リプレイ'
-                                }
                                 break
                         }
                 }
                 break;
             case "reg":
                 lot = jacLotter.lot().name;
-                switch(lot){
+                switch (lot) {
                     case 'リプレイ':
                         ret = 'MBリプレイ';
                         break
@@ -544,12 +443,12 @@ function main() {
                 } else {
                     ret = '2枚がけリプレイ'
                 }
-                if(bonusdata.mode == '同色REG') ret = '2枚がけ小役'
+                if (bonusdata.mode == '同色REG') ret = '2枚がけ小役'
                 break;
         }
         effect(ret, lot);
         lastControl = ret;
-        console.log({ret,lot})
+        console.log({ ret, lot })
         return ret;
     })
 
@@ -635,6 +534,7 @@ function main() {
     sounder.addFile("sound/cherry.mp3", "cherry").addTag("se");
     sounder.addFile("sound/bigpay.mp3", "bigpay").addTag("se");
     sounder.addFile("sound/bita.mp3", "bita").addTag("se");
+    sounder.addFile("sound/ctstart.mp3", "ctstart").addTag("se");
     sounder.addFile("sound/mb.mp3", "mb").addTag("se");
     sounder.addFile("sound/mbpay.mp3", "mbpay").addTag("se");
     sounder.addFile("sound/rushstart.mp3", "rushstart").addTag("se");
@@ -662,7 +562,7 @@ function main() {
     var coin = 0;
 
     window.bonusdata = {
-        bonusget: 252,
+        bonusget: 321,
         geted: 0
     }
     var replayflag;
@@ -900,9 +800,11 @@ function main() {
             case 'normal':
                 if (kokutid) return
                 if (slotmodule.playControlData.betcoin === 2) return;
-                if (/(1枚役|転落BB1)/.test(lot)){
-                    slotmodule.once('allreelstop',()=>{
-                        if(gamemode != 'normal') return;
+                if (/(1枚役|転落BB1)/.test(lot)) {
+                    slotmodule.once('allreelstop', () => {
+                        if (gamemode != 'normal') return;
+                        $('#win').removeClass('off');
+                        $('#win').addClass('on');
                         sounder.stopSound('bgm');
                     })
                 }
@@ -915,85 +817,105 @@ function main() {
                 var effect = getEffect[eforig] && getEffect[eforig]();
                 if (!effect) return;
                 sounder.playSound('yokoku');
-                if(/色REG/.test(lot)){
+                if (/色REG/.test(lot)) {
                     kokutid = true;
-                    slotmodule.once('bet',()=>{
-						if(gamemode !== 'big') return;
-						$('#panel').attr({src:`./img/eight_${bonusflag === '異色REG' ? 'wait1' : 'wait2'}.png`});
-						sounder.playSound('eightKokuti');
-						$('#effect').hide();
+                    slotmodule.once('payend', () => {
+                        if (gamemode !== 'big') return;
+                        $('#win').removeClass('off');
+                        $('#win').addClass('on');
+                        sounder.stopSound('bgm');
                     })
                 }
                 break
             case 'jac':
-                return;
-				var table = {
-					'2枚がけリプレイ':[70,29,1],
-					'2枚がけ小役':[20,60,20]
-				}[lot];
-				var r = rand(100);
-				var idx = table.findIndex(d=>{
-					r -= d;
-					if(r<0){return true}
-				});
-				slotmodule.freeze();
-				(async function(){
-					if(lot === '2枚がけ小役' && !rand(8)){
-						sounder.stopSound('bgm')
-						Typewriter('エビビーム<br>エビビビビビ！',{
-							speed:150,
-							delay:5000,
-						}).change((t)=>{
-							t!="\n"&&sounder.playSound('type');
-						}).title(()=>{
-							sounder.playSound('title');
-						}).finish((e)=>{
-							e.parentNode.removeChild(e);
-							setTimeout(()=>{
-								slotmodule.resume();
-							},1000)
-						});
-						return;
-					}
-					for(var i=0;i<=idx;i++){
-						sounder.playSound('step'+(i+1));
-						var src = ['eight_blue','eight_green','eight_red'][i];
-						$('#panel').attr({src:`./img/${src}.png`});
-						await wait(1000);
-					}
-					$('#ebi').addClass('display');
-					slotmodule.resume();
-				})()
-				if(lot == '2枚がけ小役'){
-					slotmodule.once('reelstop',function kakuteion(e){
-						if(e.reel != 0){
-							return slotmodule.once('reelstop',kakuteion);
-						}
-						sounder.playSound('kakutei');
-						sounder.playSound('step3');
-					})
-				}
-				slotmodule.once('allreelstop',()=>{
-					$('#panel').attr({src:`./img/uppanel.png`})
-					$('#ebi').removeClass('display');
-				})
+                if (bonusdata.jacgamecount == 2 && bonusdata.mode.includes('異色')) {
+                    return slotmodule.once('allreelstop', () => {
+                        sounder.stopSound('bgm');
+                    })
+                }
+                if (bonusdata.mode.includes('同色') && bonusdata.jacgetcount == 1){
+                    slotmodule.once('payend',()=>{
+                        sounder.stopSound('bgm');
+                        slotmodule.clearFlashReservation();
+                        slotmodule.setFlash(flashdata.blue);
+                        sounder.playSound('ctstart',false,()=>{
+                            slotmodule.resume();
+                            slotmodule.clearFlashReservation();
+                            sounder.playSound('RUSHBGM',true);
+                        });
+                        $('#logo').attr({ src: './img/logo_on.png' })
+                    })
+                    return
+                }
+                if (bonusdata.jacgamecount != 1) return
+                slotmodule.freeze();
+                (async () => {
+                    if (bonusdata.mode.includes('異色')) {
+                        $('#logo').attr({ src: './img/logo_off.png' })
+                        slotmodule.setFlash(flashdata.syoto);
+                        await wait(200);
+                        sounder.playSound('step1')
+                        slotmodule.clearFlashReservation();
+                        slotmodule.setFlash(replaceMatrix(flashdata.syoto,
+                            [
+                                [0, 0, 0],
+                                [0, 0, 0],
+                                [1, 1, 1]
+                            ], colordata.LINE_F, null), 500)
+                        await wait(500);
+                        sounder.playSound('step2')
+                        slotmodule.clearFlashReservation();
+                        slotmodule.setFlash(replaceMatrix(flashdata.syoto,
+                            [
+                                [0, 0, 0],
+                                [1, 1, 1],
+                                [1, 1, 1]
+                            ], colordata.LINE_F, null), 500)
+                        await wait(500);
+                        sounder.playSound('step3')
+                        slotmodule.clearFlashReservation();
+                        slotmodule.setFlash(replaceMatrix(flashdata.syoto,
+                            [
+                                [1, 1, 1],
+                                [1, 1, 1],
+                                [1, 1, 1]
+                            ], colordata.LINE_F, null), 500)
+                        await wait(1000);
+                    }
+                    if (lot === '2枚がけ小役') {
+                        slotmodule.clearFlashReservation();
+                        slotmodule.setFlash(flashdata.blue);
+                        sounder.playSound('ctstart',false,()=>{
+                            slotmodule.resume();
+                            slotmodule.clearFlashReservation();
+                            sounder.playSound('RUSHBGM',true);
+                        })
+                        $('#logo').attr({ src: './img/logo_on.png' })
+                    } else {
+                        slotmodule.clearFlashReservation();
+                        slotmodule.resume();
+                    }
+                })()
                 break
             case 'reg':
-                if (/(1枚役)/.test(lot)){
-                    slotmodule.once('allreelstop',()=>{
-                        if(gamemode != 'normal') return;
+                if (/(1枚役)/.test(lot)) {
+                    slotmodule.once('allreelstop', () => {
+                        if (gamemode != 'normal') return;
                         sounder.stopSound('bgm');
+                        $('#win').removeClass('off');
+                        $('#win').addClass('on');
                     })
                 }
                 break
         }
     }
-	function showRushCoin(){
-		$('#rushinfo').text(rushcoin);
-		slotmodule.once('bet',()=>{
-			$('#rushinfo').text('');
-		})
-	}
+
+    function showRushCoin() {
+        $('#rushinfo').text(rushcoin);
+        slotmodule.once('bet', () => {
+            $('#rushinfo').text('');
+        })
+    }
 
 
     $(window).bind("unload", function() {
@@ -1052,6 +974,6 @@ function segInit(selector, size) {
     return sc;
 }
 
-async function wait(time){
-	await new Promise(r=>setTimeout(r,time));
+async function wait(time) {
+    await new Promise(r => setTimeout(r, time));
 }

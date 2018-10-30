@@ -167,6 +167,25 @@
         text-align: center;
         top: -30px;
     }
+    #logo {
+        position: absolute;
+        top: 107px;
+        left: -13px;
+        transform: scale(0.9);
+    }
+    #win {
+        position: absolute;
+        top: 28px;
+        left: 815px;
+        width: 80px;
+        transition:filter 0.5s;
+    }
+    #win.off {
+        filter: brightness(40%);
+    }
+    #win.on {
+        filter: brightness(120%);
+    }
 </style>
 <body>
 <img src="img/panel.png" id="underpanel">
@@ -184,6 +203,8 @@
 <canvas id="paySegment" width="120px" height="74px"></canvas>
 <canvas id="effectSegment" width="188px" height="74px"></canvas>
 <div class="mark"></div>
+<img src="./img/logo_off.png" id="logo">
+<img src="./img/win.png" class="off" id="win">
 <div class="GameData">
 </div>
 </body>

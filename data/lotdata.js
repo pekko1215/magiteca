@@ -8,8 +8,6 @@ var lotdata = {
             value:1/9},
         {   name:"ベル",
             value:1/9},
-        {   name:"BIG",
-            value:1/560},
         {   name:'同色REG',
             value:1/1849},
         {   name:'異色REG',
